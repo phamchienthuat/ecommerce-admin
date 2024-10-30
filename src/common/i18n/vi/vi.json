@@ -1,7 +1,15 @@
 {
-  "key1": "value1",
+  "Home": "Đây này",
   "key2": "value2",
   "key3": {
     "subkey1": "subvalue1"
+  },
+  "title": "Tiêu đề",
+  "description": "Mô tả",
+  "enter_your": "Nhập",
+  "parent_category": "Danh mục cha",
+  "choose_image": "Chọn ảnh",
+  "category": {
+    "add_category":"Thêm mới danh mục"
   }
 }

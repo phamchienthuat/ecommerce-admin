@@ -1,8 +1,17 @@
 {
-    "key1": "value1",
+    "Home": "Home",
     "key2": "value2",
     "key3": {
       "subkey1": "subvalue1"
+    },
+
+    "title": "Title",
+    "description": "Description",
+    "enter_your": "Enter your",
+    "parent_category": "Parent category",
+    "choose_image": "Choose image",
+    "category": {
+      "add_category":"Add Category"
     }
   }
   

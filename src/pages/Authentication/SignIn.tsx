@@ -2,6 +2,7 @@ import { Form, Formik } from 'formik';
 import { loginSchema } from '../../common/schema/schemaValidation';
 import { MyTextInput } from '../../common/components/form/CustomField';
 import { useNavigate } from 'react-router-dom';
+import { axiosInstance } from '../../utils/axiosInstance';
 
 const SignIn = () => {
   const navigate = useNavigate(); // Khai báo useNavigate
@@ -20,11 +21,27 @@ const SignIn = () => {
                 initialValues={{ email: '', password: '' }}
                 validationSchema={loginSchema}
                 onSubmit={(values, { setSubmitting }) => {
-                  setTimeout(() => {
-                    alert(JSON.stringify(values, null, 2));
-                    setSubmitting(false);
-                    window.localStorage.setItem('isLoggedIn', 'true');
-                    navigate('/');
+                  setTimeout(async () => {
+                    try {
+                      const response  = await axiosInstance.post('/auth/login', {
+                        email: values.email,
+                        password: values.password,
+                      });
+
+                      console.log(response)
+                      if (response.status === 201) {
+                        const { accessToken, refreshToken, user } = response.data;
+              
+                        window.localStorage.setItem('accessToken', accessToken);
+                        window.localStorage.setItem('refreshToken', refreshToken);
+                        window.localStorage.setItem('user', JSON.stringify(user));
+                        navigate('/');
+                      }
+                    } catch (error) {
+                      console.error('Login failed:', error);
+                    } finally {
+                      setSubmitting(false);
+                    }
                   }, 400);
                 }}
               >

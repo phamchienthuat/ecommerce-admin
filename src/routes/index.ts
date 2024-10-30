@@ -9,6 +9,8 @@ const Settings = lazy(() => import('../pages/Settings'));
 const Tables = lazy(() => import('../pages/Tables'));
 const Alerts = lazy(() => import('../pages/UiElements/Alerts'));
 const Buttons = lazy(() => import('../pages/UiElements/Buttons'));
+const Category = lazy(() => import('../pages/Category/Category'));
+const CategoryEdit = lazy(() => import('../pages/Category/CategoryEdit'));
 
 const coreRoutes = [
   {
@@ -55,6 +57,16 @@ const coreRoutes = [
     path: '/ui/buttons',
     title: 'Buttons',
     component: Buttons,
+  },
+  {
+    path: '/category',
+    title: 'Category',
+    component: Category,
+  },
+  {
+    path: '/category/add',
+    title: 'CategoryEdit',
+    component: CategoryEdit,
   },
 ];
 
