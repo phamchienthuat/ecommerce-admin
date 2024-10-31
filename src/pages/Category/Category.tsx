@@ -1,131 +1,183 @@
 import { useTranslation } from 'react-i18next';
+import { useEffect, useState } from 'react';
+import { axiosInstance } from '../../utils/axiosInstance';
+import { ICategory } from '../../common/interfaces/categories';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TextField,
+  Checkbox,
+} from '@mui/material';
 import Breadcrumb from '../../components/Breadcrumb';
-import ProductOne from '../../images/product/product-01.png';
-import ProductTwo from '../../images/product/product-02.png';
-import ProductThree from '../../images/product/product-03.png';
-import ProductFour from '../../images/product/product-04.png';
+import NoImage from '../../images/product/no-image.jpg';
+import { Link } from 'react-router-dom';
 
 const Category = () => {
   const [t, i18n] = useTranslation('global');
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [filteredCategories, setFilteredCategories] = useState<ICategory[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selected, setSelected] = useState<number[]>([]);
+
+  // Lấy danh sách categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axiosInstance.get<{
+          success: boolean;
+          data: ICategory[];
+        }>('/category');
+        if (response.data.success) {
+          setCategories(response.data.data);
+          setFilteredCategories(response.data.data); // Thiết lập dữ liệu ban đầu cho bộ lọc
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Cập nhật danh sách category khi có thay đổi từ tìm kiếm
+  useEffect(() => {
+    const results = categories.filter((category) =>
+      category.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+    setFilteredCategories(results);
+  }, [searchTerm, categories]);
+
+  const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      const allIds = filteredCategories.map((category) => category.id);
+      setSelected(allIds);
+    } else {
+      setSelected([]);
+    }
+  };
+
+  const handleSelectOne = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
+    if (event.target.checked) {
+      setSelected((prev) => [...prev, id]);
+    } else {
+      setSelected((prev) => prev.filter((categoryId) => categoryId !== id));
+    }
+  };
 
   return (
     <>
       <Breadcrumb pageName="Category" />
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-
-        <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-          <div className="col-span-3 flex items-center">
-            <p className="font-medium">Category</p>
-          </div>
-          <div className="col-span-2 hidden items-center sm:flex">
-            <p className="font-medium">Parent Category</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="font-medium">Description</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="font-medium">Sold</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="font-medium">Profit</p>
-          </div>
+        <div className="flex justify-between items-center gap-4 p-3 mb-5">
+          <input
+            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            placeholder="Search Category ..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Link to={'/category/add'}
+            type="submit"
+            className="flex justify-center rounded bg-primary py-3 px-6 font-medium text-gray text-sm whitespace-nowrap"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 32 32"
+            >
+              <path
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                stroke-width="2"
+                d="M16 25V7m-9 9h18"
+              />
+            </svg>
+            Add Category
+          </Link>
         </div>
 
-        <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-          <div className="col-span-3 flex items-center">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <div className="h-12.5 w-15 rounded-md">
-                <img src={ProductOne} alt="Product" />
-              </div>
-              <p className="text-sm text-black dark:text-white">
-                Apple Watch Series 7
-              </p>
-            </div>
-          </div>
-          <div className="col-span-2 hidden items-center sm:flex">
-            <p className="text-sm text-black dark:text-white">Electronics</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="text-sm text-black dark:text-white">$269</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="text-sm text-black dark:text-white">22</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="text-sm text-meta-3">$45</p>
-          </div>
-        </div>
-        <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-          <div className="col-span-3 flex items-center">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <div className="h-12.5 w-15 rounded-md">
-                <img src={ProductTwo} alt="Product" />
-              </div>
-              <p className="text-sm text-black dark:text-white">
-                Macbook Pro M1
-              </p>
-            </div>
-          </div>
-          <div className="col-span-2 hidden items-center sm:flex">
-            <p className="text-sm text-black dark:text-white">Electronics</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="text-sm text-black dark:text-white">$546</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="text-sm text-black dark:text-white">34</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="text-sm text-meta-3">$125</p>
-          </div>
-        </div>
-        <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-          <div className="col-span-3 flex items-center">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <div className="h-12.5 w-15 rounded-md">
-                <img src={ProductThree} alt="Product" />
-              </div>
-              <p className="text-sm text-black dark:text-white">
-                Dell Inspiron 15
-              </p>
-            </div>
-          </div>
-          <div className="col-span-2 hidden items-center sm:flex">
-            <p className="text-sm text-black dark:text-white">Electronics</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="text-sm text-black dark:text-white">$443</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="text-sm text-black dark:text-white">64</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="text-sm text-meta-3">$247</p>
-          </div>
-        </div>
-        <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
-          <div className="col-span-3 flex items-center">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <div className="h-12.5 w-15 rounded-md">
-                <img src={ProductFour} alt="Product" />
-              </div>
-              <p className="text-sm text-black dark:text-white">
-                HP Probook 450
-              </p>
-            </div>
-          </div>
-          <div className="col-span-2 hidden items-center sm:flex">
-            <p className="text-sm text-black dark:text-white">Electronics</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="text-sm text-black dark:text-white">$499</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="text-sm text-black dark:text-white">72</p>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <p className="text-sm text-meta-3">$103</p>
-          </div>
+        <div className="p-3">
+          <TableContainer component={Paper} className="">
+            <Table>
+              <TableHead>
+                <TableRow>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    checked={filteredCategories.length > 0 && selected.length === filteredCategories.length}
+                    onChange={handleSelectAll}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-sm text-black dark:text-white">Image</p>
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-sm text-black dark:text-white">Name</p>
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-sm text-black dark:text-white">
+                      Parent Category
+                    </p>
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-sm text-black dark:text-white">Slug</p>
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-sm text-black dark:text-white">
+                      Description
+                    </p>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredCategories.map((category) => (
+                  <TableRow key={category.id}>
+                    <TableCell padding="checkbox">
+                    <Checkbox
+                      checked={selected.indexOf(category.id) !== -1}
+                      onChange={(event) => handleSelectOne(event, category.id)}
+                    />
+                  </TableCell>
+                    <TableCell>
+                      <div className="h-15.5 w-20 rounded-md overflow-hidden">
+                        {category.image ? (
+                          <img
+                            src={category.image}
+                            alt="category"
+                            className="w-full h-full"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <img
+                            src={NoImage}
+                            alt="no image"
+                            className="w-full h-full"
+                            loading="lazy"
+                          />
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>{category.name}</TableCell>
+                    <TableCell>
+                      {category.parentId
+                        ? categories.find(
+                            (item) => item.id === category.parentId,
+                          )?.name || 'No Parent'
+                        : ''}
+                    </TableCell>
+                    <TableCell>{category.slug}</TableCell>
+                    <TableCell>{category.description}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </div>
       </div>
     </>

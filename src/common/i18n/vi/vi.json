@@ -9,6 +9,7 @@
   "enter_your": "Nhập",
   "parent_category": "Danh mục cha",
   "choose_image": "Chọn ảnh",
+  "slug":"Đường dẫn",
   "category": {
     "add_category":"Thêm mới danh mục"
   }

@@ -59,8 +59,8 @@ const coreRoutes = [
     component: Buttons,
   },
   {
-    path: '/category',
-    title: 'Category',
+    path: '/category/list',
+    title: 'Categories',
     component: Category,
   },
   {

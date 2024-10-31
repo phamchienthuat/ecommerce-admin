@@ -35,6 +35,7 @@ const SignIn = () => {
                         window.localStorage.setItem('accessToken', accessToken);
                         window.localStorage.setItem('refreshToken', refreshToken);
                         window.localStorage.setItem('user', JSON.stringify(user));
+                        window.localStorage.setItem('isLoggedIn', 'true');
                         navigate('/');
                       }
                     } catch (error) {
