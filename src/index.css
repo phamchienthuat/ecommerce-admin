@@ -167,3 +167,16 @@ span.flatpickr-weekday,
   background-position: center;
   background-size: cover;
 }
+
+.MuiTableCell-head{
+  font-family: 'Satoshi', sans-serif !important;
+  display: flex;
+  align-items: center;
+}
+
+.MuiTableCell-body{
+  font-weight: 500 !important;
+  font-family: 'Satoshi', sans-serif !important;
+  border-bottom: unset !important;
+  border-top: 1px solid #e2e8f0 !important;
+}
