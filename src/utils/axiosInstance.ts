@@ -4,7 +4,7 @@ const apiUrl = import.meta.env.VITE_APP_API_URL;
 
 export const axiosInstance = axios.create({
   baseURL: apiUrl,
-  timeout: 2000,
+  timeout: 60000,
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -65,7 +65,7 @@ axiosInstance.interceptors.response.use(
         } else {
           // Nếu làm mới token thất bại, chuyển hướng người dùng đến trang đăng nhập
           localStorage.clear(); // Dọn dẹp token trước khi chuyển hướng
-          window.location.href = '/login';
+          window.location.href = 'auth/signin';
         }
       }
   

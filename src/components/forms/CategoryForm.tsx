@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
 import { FormControl, FormLabel, TextareaAutosize } from '@mui/material';
 import { ErrorMessage, Field, Formik } from 'formik';
 import Autocomplete from '@mui/material/Autocomplete';
 import * as Yup from 'yup';
 import { axiosInstance } from '../../utils/axiosInstance';
-import { ICategory } from '../../common/interfaces/categories';
+import { ICategory, ICategoryInput } from '../../common/interfaces/categories';
 
 const CategoryForm = () => {
   const [t, i18n] = useTranslation('global');
   const [categories, setCategories] = useState<ICategory[]>([]);
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    }
+  };
 
   // lay danh sach categories
   useEffect(() => {
@@ -43,8 +49,20 @@ const CategoryForm = () => {
   });
 
   const onSubmit = async (values: any, props: any) => {
+    const formData = new FormData();
+    formData.append('name', values.name);
+    formData.append('parentId', values.parentId);
+    formData.append('description', values.description);
+    formData.append('slug', values.slug);
+    if (file) {
+      formData.append('image', file);
+    }
+    console.log(formData)
     try {
-      const response = await axiosInstance.post<{ success: boolean; data: ICategory[] }>('/category',values);
+      const response = await axiosInstance.post<{ success: boolean; data: ICategoryInput[] }>('/category',formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }});
       if (response.data.success) {
         alert('success')
       }
@@ -118,6 +136,7 @@ const CategoryForm = () => {
               <input
                 type="file"
                 name='image'
+                onChange={handleFile}
                 className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-medium outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:py-3 file:px-5 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
               />
             </div>

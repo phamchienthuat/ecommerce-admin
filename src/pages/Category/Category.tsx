@@ -29,31 +29,57 @@ const Category = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selected, setSelected] = useState<number[]>([]);
   const [open, setOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+
   
   const [openModal, setOpenModal] = useState(false);
-  const handleOpen = () => setOpenModal(true);
-  const handleClose = () => setOpenModal(false);
+  const handleOpenModal = (id: any) => {
+    setSelectedId(id);
+    setOpenModal(true);
+  };
+
+  const handleClose = () => {
+    setOpenModal(false);
+    setSelectedId(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedId) {
+      deleteCategory(selectedId);
+    }
+  };
+
+  const deleteCategory = async (id: number) => {
+    try {
+      await axiosInstance.delete(`/category?ids=${id}`);
+      alert('Deleted successfully');
+      fetchCategories();
+      handleClose();
+    } catch (error) {
+      console.error('Failed to delete category:', error);
+    }
+  };
 
 
   // Lấy danh sách categories
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axiosInstance.get<{
-          success: boolean;
-          data: ICategory[];
-        }>('/category');
-        if (response.data.success) {
-          setCategories(response.data.data);
-          setFilteredCategories(response.data.data); // Thiết lập dữ liệu ban đầu cho bộ lọc
-        }
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
-
     fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axiosInstance.get<{
+        success: boolean;
+        data: ICategory[];
+      }>('/category');
+      if (response.data.success) {
+        setCategories(response.data.data);
+        setFilteredCategories(response.data.data); // Thiết lập dữ liệu ban đầu cho bộ lọc
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
 
   // Cập nhật danh sách category khi có thay đổi từ tìm kiếm
   useEffect(() => {
@@ -301,7 +327,7 @@ const Category = () => {
                             </g>
                           </svg>
                         </button>
-                        <button className="text-slate-500 hover:text-primary" onClick={handleOpen}>
+                        <button className="text-slate-500 hover:text-primary" onClick={() => handleOpenModal(category.id)}>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
@@ -365,13 +391,14 @@ const Category = () => {
                     Do you want to delete the item?
                   </h3>
                   <div className="flex justify-center flex-row-reverse gap-4.5">
-                    <button
+                    <button onClick={handleClose}
                       className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
                       type="submit"
                     >
                       Cancel
                     </button>
-                    <button
+                    <button 
+                      onClick={handleConfirmDelete}
                       className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-70"
                       type="submit"
                     >
